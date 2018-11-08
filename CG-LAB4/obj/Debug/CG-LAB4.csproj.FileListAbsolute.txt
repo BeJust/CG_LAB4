@@ -1,0 +1,10 @@
+C:\2 курс\Компьютерная графика\CG-LAB4\CG-LAB4\bin\Debug\CG-LAB4.exe.config
+C:\2 курс\Компьютерная графика\CG-LAB4\CG-LAB4\bin\Debug\CG-LAB4.exe
+C:\2 курс\Компьютерная графика\CG-LAB4\CG-LAB4\bin\Debug\CG-LAB4.pdb
+C:\2 курс\Компьютерная графика\CG-LAB4\CG-LAB4\obj\Debug\CG-LAB4.csprojAssemblyReference.cache
+C:\2 курс\Компьютерная графика\CG-LAB4\CG-LAB4\obj\Debug\CG_LAB4.MainWindow.resources
+C:\2 курс\Компьютерная графика\CG-LAB4\CG-LAB4\obj\Debug\CG_LAB4.Properties.Resources.resources
+C:\2 курс\Компьютерная графика\CG-LAB4\CG-LAB4\obj\Debug\CG-LAB4.csproj.GenerateResource.cache
+C:\2 курс\Компьютерная графика\CG-LAB4\CG-LAB4\obj\Debug\CG-LAB4.csproj.CoreCompileInputs.cache
+C:\2 курс\Компьютерная графика\CG-LAB4\CG-LAB4\obj\Debug\CG-LAB4.exe
+C:\2 курс\Компьютерная графика\CG-LAB4\CG-LAB4\obj\Debug\CG-LAB4.pdb
