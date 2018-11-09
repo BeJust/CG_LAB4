@@ -66,11 +66,14 @@ namespace CG_LAB4
         {
             MouseWheel += new MouseEventHandler(FormMain_MouseWheel);
             g = CreateGraphics();
-            screen = new ClassLib.Screen(Size, -2, 2, -2, 2);
+            Size newSize = new Size(ClientRectangle.Width, ClientRectangle.Height);        
+            screen = new ClassLib.Screen(newSize, -2, 2, -2, 2);
             cam = new Camera();
             drawer = new Drawer();
             
-            
+
+
+
         }
 
         private void MainWindow_MouseDown(object sender, MouseEventArgs e)

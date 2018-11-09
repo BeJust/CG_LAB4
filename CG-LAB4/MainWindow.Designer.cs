@@ -41,7 +41,6 @@
             this.groupBox3_gb = new System.Windows.Forms.GroupBox();
             this.axis_rb = new System.Windows.Forms.RadioButton();
             this.body_rb = new System.Windows.Forms.RadioButton();
-            this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.groupBox_gb1.SuspendLayout();
             this.groupBox_gb2.SuspendLayout();
             this.groupBox3_gb.SuspendLayout();
@@ -140,6 +139,7 @@
             // hScrollBar3
             // 
             this.hScrollBar3.Location = new System.Drawing.Point(469, 16);
+            this.hScrollBar3.Minimum = -100;
             this.hScrollBar3.Name = "hScrollBar3";
             this.hScrollBar3.Size = new System.Drawing.Size(231, 17);
             this.hScrollBar3.TabIndex = 2;
@@ -148,6 +148,7 @@
             // hScrollBar2
             // 
             this.hScrollBar2.Location = new System.Drawing.Point(238, 16);
+            this.hScrollBar2.Minimum = -100;
             this.hScrollBar2.Name = "hScrollBar2";
             this.hScrollBar2.Size = new System.Drawing.Size(231, 17);
             this.hScrollBar2.TabIndex = 1;
@@ -156,6 +157,7 @@
             // hScrollBar1
             // 
             this.hScrollBar1.Location = new System.Drawing.Point(7, 17);
+            this.hScrollBar1.Minimum = -100;
             this.hScrollBar1.Name = "hScrollBar1";
             this.hScrollBar1.Size = new System.Drawing.Size(231, 17);
             this.hScrollBar1.TabIndex = 0;
@@ -200,11 +202,12 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1376, 640);
+            this.ClientSize = new System.Drawing.Size(1320, 490);
             this.Controls.Add(this.groupBox3_gb);
             this.Controls.Add(this.groupBox_gb2);
             this.Controls.Add(this.groupBox_gb1);
             this.Name = "MainWindow";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Task4";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.Load += new System.EventHandler(this.MainWindow_Load);
@@ -236,7 +239,6 @@
         private System.Windows.Forms.GroupBox groupBox3_gb;
         private System.Windows.Forms.RadioButton axis_rb;
         private System.Windows.Forms.RadioButton body_rb;
-        private System.ComponentModel.BackgroundWorker backgroundWorker1;
     }
 }
 

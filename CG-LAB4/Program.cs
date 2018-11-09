@@ -18,7 +18,7 @@ namespace CG_LAB4
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             mainWindow = new MainWindow();
-            Application.Run(new MainWindow());
+            Application.Run(mainWindow);
         }
     }
 }

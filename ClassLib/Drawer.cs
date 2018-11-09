@@ -10,7 +10,7 @@ namespace ClassLib
 {
     public class Drawer
     {
-        public static Vector Sv = new Vector(-0.0, -0.0, 1.5); // источник света
+        public static double[] Sv = { -0.0, -0.0, 1.5, 1 }; // источник света
         public Bitmap bitmap { get; set; }
         public SolidBrush myBrush { get; set; }
         public static Body body { get; set; }
@@ -35,7 +35,7 @@ namespace ClassLib
         }
         
 
-        Point IJ(Vector Vt)
+        Point IJ(double[] Vt)
         {
             Point result;
             Vt = Matrix.Rotate(Vt, 0, Camera.Alf, 0, 0);
@@ -44,7 +44,7 @@ namespace ClassLib
             return result;
         }
 
-        Vector Norm(Vector V1, Vector V2, Vector V3)
+        double[] Norm(double[] V1, double[] V2, double[] V3)
         {
             double[] Result = new double[4];
             double[] A = new double[4];
@@ -68,7 +68,7 @@ namespace ClassLib
                 Result[1] = 0;
                 Result[2] = 0;
             }
-            return new Vector(Result[0], Result[1], Result[2]);
+            return Result;
         }
 
         void DrawFaces(Graphics g)
@@ -77,28 +77,25 @@ namespace ClassLib
             int L0 = body.Faces[0].p.Length;
             Point[] w = new Point[L0];
 
-            Vector[] Vn = new Vector[L1];
-            Vector[] Wn = new Vector[L0];
+            double[][] Vn = new double[3][];
+            double[][] Wn = new double[3][];
             for (int i = 0; i < L1; i++)
             {
                 for (int j = 0; j < L0; j++)
                 {
-                    double[] Vt = body.Vertexs[body.Faces[i].p[j]];
-                    Vector Vt2 = new Vector(Vt[0], Vt[1], Vt[2]);
-                    Vt2 = Matrix.Rotate(Vt2, 0, Camera.Alf1, 0, 0);
-                    Vt2 = Matrix.Rotate(Vt2, 1, Camera.Bet1, 0, 0);
-                    if (j <= 2) Vn[j] = Vt2;
-                    Vt2 = Matrix.Rotate(Vt2, 3, 0, 0, 0);
-                    Vt2 = Matrix.Rotate(Vt2, 0, Camera.Alf, 0, 0);
-                    Vt2 = Matrix.Rotate(Vt2, 1, Camera.Bet, 0, 0);
-                    w[j].X = II(Vt2[0]);
-                    w[j].Y = JJ(Vt2[1]);
-                    if (j <= 2) Wn[j] = Vt2;
+                    double[] Vt = body.Vertexs[body.Faces[i].p[j]];                  
+                    Vt = Matrix.Rotate(Vt, 0, Camera.Alf1, 0, 0);
+                    Vt = Matrix.Rotate(Vt, 1, Camera.Bet1, 0, 0);
+                    if (j <= 2) Vn[j] = Vt;
+                    Vt = Matrix.Rotate(Vt, 3, 0, 0, 0);
+                    Vt = Matrix.Rotate(Vt, 0, Camera.Alf, 0, 0);
+                    Vt = Matrix.Rotate(Vt, 1, Camera.Bet, 0, 0);
+                    w[j].X = II(Vt[0]);
+                    w[j].Y = JJ(Vt[1]);
+                    if (j <= 2) Wn[j] = Vt;
                 }
-                Vector tmp = Norm(Vn[0], Vn[1], Vn[2]);
-                double[] res = new double[]{ tmp[0], tmp[1], tmp[2] };
-                body.Faces[i].N = res;
-                Vector NN = Norm(Wn[0], Wn[1], Wn[2]);
+                body.Faces[i].N = Norm(Vn[0], Vn[1], Vn[2]);
+                double[] NN = Norm(Wn[0], Wn[1], Wn[2]);
                 double d = Math.Abs(NN[2]);
                 Color col = Color.FromArgb(0, 0, (byte)(Math.Round(255 * d)));
                 SolidBrush br = new SolidBrush(col);
@@ -123,14 +120,14 @@ namespace ClassLib
             double Zh = -1;
             for (int i = 0; i < 41; i++)
             {
-                P1 = IJ(new Vector(-1 + i * 0.2 / 4, -1, Zh));
-                P2 = IJ(new Vector(-1 + i * 0.2 / 4, 1, Zh));
+                P1 = IJ(Vector.ToVector(-1 + i * 0.2 / 4, -1, Zh));
+                P2 = IJ(Vector.ToVector(-1 + i * 0.2 / 4, 1, Zh));
                 g.DrawLine(Pens.Silver, P1.X, P1.Y, P2.X, P2.Y);
             }
             for (int i = 0; i < 41; i++)
             {
-                P1 = IJ(new Vector(-1, -1 + i * 0.2 / 4, Zh));
-                P2 = IJ(new Vector(1, -1 + i * 0.2 / 4, Zh));
+                P1 = IJ(Vector.ToVector(-1, -1 + i * 0.2 / 4, Zh));
+                P2 = IJ(Vector.ToVector(1, -1 + i * 0.2 / 4, Zh));
                 g.DrawLine(Pens.Silver, P1.X, P1.Y, P2.X, P2.Y);
             }
 
@@ -142,16 +139,15 @@ namespace ClassLib
             {
                 for (int j = 0; j < L0; j++)
                 {
-                    double[] Vt = body.Vertexs[body.Faces[i].p[j]];
-                    Vector Vt2 = new Vector(Vt[0], Vt[1], Vt[2]);
-                    Vt2 = Matrix.Rotate(Vt2, 0, Camera.Alf1, 0, 0);
-                    Vt2 = Matrix.Rotate(Vt2, 1, Camera.Bet1, 0, 0);
-                    Vt2 = Matrix.Rotate(Vt2, 3, 0, 0, 0);
-                    Vt2[0] = Sv[0] + (Vt[0] - Sv[0]) * (Zh - Sv[2]) / (Vt[2] - Sv[2]);
-                    Vt2[1] = Sv[1] + (Vt[1] - Sv[1]) * (Zh - Sv[2]) / (Vt[2] - Sv[2]);
-                    Vt2[2] = Zh;
-                    Vt2 = Matrix.Rotate(Vt2, 0, Camera.Alf, 0, 0);
-                    Vt2 = Matrix.Rotate(Vt2, 1, Camera.Bet, 0, 0);
+                    double[] Vt = body.Vertexs[body.Faces[i].p[j]];                  
+                    Vt = Matrix.Rotate(Vt, 0, Camera.Alf1, 0, 0);
+                    Vt = Matrix.Rotate(Vt, 1, Camera.Bet1, 0, 0);
+                    Vt = Matrix.Rotate(Vt, 3, 0, 0, 0);
+                    Vt[0] = Sv[0] + (Vt[0] - Sv[0]) * (Zh - Sv[2]) / (Vt[2] - Sv[2]);
+                    Vt[1] = Sv[1] + (Vt[1] - Sv[1]) * (Zh - Sv[2]) / (Vt[2] - Sv[2]);
+                    Vt[2] = Zh;
+                    Vt = Matrix.Rotate(Vt, 0, Camera.Alf, 0, 0);
+                    Vt = Matrix.Rotate(Vt, 1, Camera.Bet, 0, 0);
                     w[j].X = II(Vt[0]);
                     w[j].Y = JJ(Vt[1]);
                 }

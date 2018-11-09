@@ -18,7 +18,7 @@ namespace ClassLib
 
         public Screen(Size sz, double xMin, double xMax, double yMin, double yMax)
         {
-            Size = sz; //I2 - width J2 - height
+            Size = sz; 
             Xmin = xMin;
             Xmax = xMax;
             Ymin = yMin;
