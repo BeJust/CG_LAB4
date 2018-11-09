@@ -10,155 +10,41 @@ namespace ClassLib
 {
     public class Drawer
     {
-        public double Xmin;
-        public double Xmax;
-        public double Ymin;
-        public double Ymax;
-        public static byte flEdge = 0;
-        public int I2;
-        public int J2;
-        public static bool visibleShadow = false;
-        public Bitmap bitmap;
-        public static Body body;
-        public double Alf;
-        public double Bet;
-        public double Alf1;
-        public double Bet1;
-        public static double Xs = 0; // 1-я точка схода
-        public static double Zs = 0; // 2-я точка схода
-        public static double[] Sv = { -0.0, -0.0, 1.5, 1 }; // источник света
+        public static Vector Sv = new Vector(-0.0, -0.0, 1.5); // источник света
+        public Bitmap bitmap { get; set; }
+        public SolidBrush myBrush { get; set; }
+        public static Body body { get; set; }
+        public static Body body0 { get; set; }
 
-        public Drawer(int VW, int VH)
+        public Drawer()
         {
-            Xmin = -2;
-            Xmax = 2;
-            Ymin = -2;
-            Ymax = 2;
-            Alf = 4.31;
-            Bet = 4.92;
-            Alf1 = 0;
-            Bet1 = 0;
-            I2 = VW;
-            J2 = VH;
+            bitmap = new Bitmap(Screen.Size.Width, Screen.Size.Height);
+            myBrush = new SolidBrush(Color.White);
+            body = new Body(0);
+            body0 = new Body(1);
         }
 
-        public void Draw()
+        int II(double x)
         {
-            I2 = bitmap.Width;
-            J2 = bitmap.Height;
-            using (Graphics g = Graphics.FromImage(bitmap))
-            {
-                Color cl;
-                if (flEdge == 2)
-                    cl = Color.FromArgb(0, 0, 0);
-                else
-                    cl = Color.FromArgb(255, 255, 255);
-                g.Clear(cl);
-                g.SmoothingMode = SmoothingMode.HighQuality;
-                if (visibleShadow) // рисование тени
-                    Shadow(g);
-                DrawBody(g);       // рисование тела
-            }
+            return (int)Math.Round((x - Screen.Xmin) * Screen.Size.Width / (Screen.Xmax - Screen.Xmin));
         }
 
-        public void DrawBody(Graphics g)
+        int JJ(double y)
         {
-            int L;
-            if ((flEdge == 0) | (flEdge == 2))
-            {
-                L = body.Vertexs.Length;
-                for (int i = 0; i < L; i++)
-                {
-                    body.VertexsT[i] = Rotate(body.Vertexs[i], 0, Alf1, 0, 0);
-                    body.VertexsT[i] = Rotate(body.VertexsT[i], 1, Bet1, 0, 0);
-                    body.VertexsT[i] = Rotate(body.VertexsT[i], 3, 0, Xs, Zs);
-                    body.VertexsT[i] = Rotate(body.VertexsT[i], 0, Alf, 0, 0);
-                    body.VertexsT[i] = Rotate(body.VertexsT[i], 1, Bet, 0, 0);
-                }
-            }
-            DrawFaces(g);       
+            return (int)Math.Round((y - Screen.Ymax) * Screen.Size.Height / (Screen.Ymin - Screen.Ymax));
+        }
+        
+
+        Point IJ(Vector Vt)
+        {
+            Point result;
+            Vt = Matrix.Rotate(Vt, 0, Camera.Alf, 0, 0);
+            Vt = Matrix.Rotate(Vt, 1, Camera.Bet, 0, 0);
+            result = new Point(II(Vt[0]), JJ(Vt[1]));
+            return result;
         }
 
-        void DrawFaces(Graphics g)
-        {
-            int L1 = body.Faces.Length;
-            int L0 = body.Faces[0].p.Length;
-            Point[] w = new Point[L0];
-
-            double[][] Vn = new double[3][];
-            double[][] Wn = new double[3][];
-            for (int i = 0; i < L1; i++)
-            {
-                for (int j = 0; j < L0; j++)
-                {
-                    double[] Vt = body.Vertexs[body.Faces[i].p[j]];
-                    Vt = Rotate(Vt, 0, Alf1, 0, 0);
-                    Vt = Rotate(Vt, 1, Bet1, 0, 0);
-                    if (j <= 2) Vn[j] = Vt;
-                    Vt = Rotate(Vt, 3, 0, Xs, Zs);
-                    Vt = Rotate(Vt, 0, Alf, 0, 0);
-                    Vt = Rotate(Vt, 1, Bet, 0, 0);
-                    w[j].X = II(Vt[0]);
-                    w[j].Y = JJ(Vt[1]);
-                    if (j <= 2) Wn[j] = Vt;
-                }
-                body.Faces[i].N = Norm(Vn[0], Vn[1], Vn[2]);
-                double[] NN = Norm(Wn[0], Wn[1], Wn[2]);
-                double d = Math.Abs(NN[2]);
-                Color col = Color.FromArgb(0, 0, (byte)(Math.Round(255 * d)));
-                SolidBrush br = new SolidBrush(col);
-                if (NN[2] < 0)
-                    g.FillPolygon(br, w);
-            }
-        }
-
-        private void Shadow(Graphics g)
-        {
-            Point P = IJ(Sv);
-            g.FillRectangle(Brushes.Red, P.X - 2, P.Y - 2, 5, 5);
-            g.DrawLine(Pens.Red, P.X - 4, P.Y, P.X + 4, P.Y);
-            g.DrawLine(Pens.Red, P.X, P.Y - 4, P.X, P.Y + 5);
-
-            Point P1, P2;
-            double Zh = -1;
-            for (int i = 0; i < 41; i++)
-            {
-                P1 = IJ(ToVector(-1 + i * 0.2 / 4, -1, Zh));
-                P2 = IJ(ToVector(-1 + i * 0.2 / 4, 1, Zh));
-                g.DrawLine(Pens.Silver, P1.X, P1.Y, P2.X, P2.Y);
-            }
-            for (int i = 0; i < 41; i++)
-            {
-                P1 = IJ(ToVector(-1, -1 + i * 0.2 / 4, Zh));
-                P2 = IJ(ToVector(1, -1 + i * 0.2 / 4, Zh));
-                g.DrawLine(Pens.Silver, P1.X, P1.Y, P2.X, P2.Y);
-            }
-
-            int L1 = body.Faces.Length;
-            int L0 = body.Faces[0].p.Length;
-            Point[] w = new Point[L0];
-
-            for (int i = 0; i < L1; i++)
-            {
-                for (int j = 0; j < L0; j++)
-                {
-                    double[] Vt = body.Vertexs[body.Faces[i].p[j]];
-                    Vt = Rotate(Vt, 0, Alf1, 0, 0);
-                    Vt = Rotate(Vt, 1, Bet1, 0, 0);
-                    Vt = Rotate(Vt, 3, 0, Xs, Zs);
-                    Vt[0] = Sv[0] + (Vt[0] - Sv[0]) * (Zh - Sv[2]) / (Vt[2] - Sv[2]);
-                    Vt[1] = Sv[1] + (Vt[1] - Sv[1]) * (Zh - Sv[2]) / (Vt[2] - Sv[2]);
-                    Vt[2] = Zh;
-                    Vt = Rotate(Vt, 0, Alf, 0, 0);
-                    Vt = Rotate(Vt, 1, Bet, 0, 0);
-                    w[j].X = II(Vt[0]);
-                    w[j].Y = JJ(Vt[1]);
-                }
-                g.FillPolygon(Brushes.Silver, w);
-            }
-        }
-        /////
-        double[] Norm(double[] V1, double[] V2, double[] V3)
+        Vector Norm(Vector V1, Vector V2, Vector V3)
         {
             double[] Result = new double[4];
             double[] A = new double[4];
@@ -182,104 +68,109 @@ namespace ClassLib
                 Result[1] = 0;
                 Result[2] = 0;
             }
-            return Result;
+            return new Vector(Result[0], Result[1], Result[2]);
         }
 
-        public int II(double x)
+        void DrawFaces(Graphics g)
         {
-            return (int)Math.Round((x - Xmin) * I2 / (Xmax - Xmin));
-        }
+            int L1 = body.Faces.Length;
+            int L0 = body.Faces[0].p.Length;
+            Point[] w = new Point[L0];
 
-        int JJ(double y)
-        {
-            return (int)Math.Round((y - Ymax) * J2 / (Ymin - Ymax));
-        }
-
-        double XX(int I)
-        {
-            return Xmin + (Xmax - Xmin) * I / I2;
-        }
-
-        double YY(int J)
-        {
-            return Ymax + (Ymin - Ymax) * J / J2;
-        }
-
-        public Point IJ(double[] Vt)
-        {
-            Point result;
-            Vt = Rotate(Vt, 0, Alf, 0, 0);
-            Vt = Rotate(Vt, 1, Bet, 0, 0);
-            result = new Point(II(Vt[0]), JJ(Vt[1]));
-            return result;
-        }
-
-        double[] ToVector(double x, double y, double z)
-        {
-            double[] result = new double[4];
-            result[0] = x;
-            result[1] = y;
-            result[2] = z;
-            result[3] = 1;
-            return result;
-        }
-
-        public double[] VM_Mult(double[] A, double[][] B)
-        {
-            double[] result = new double[4];
-            for (int j = 0; j < 4; j++)
+            Vector[] Vn = new Vector[L1];
+            Vector[] Wn = new Vector[L0];
+            for (int i = 0; i < L1; i++)
             {
-                result[j] = A[0] * B[0][j];
-                for (int k = 1; k < 4; k++)
-                    result[j] += A[k] * B[k][j];
+                for (int j = 0; j < L0; j++)
+                {
+                    double[] Vt = body.Vertexs[body.Faces[i].p[j]];
+                    Vector Vt2 = new Vector(Vt[0], Vt[1], Vt[2]);
+                    Vt2 = Matrix.Rotate(Vt2, 0, Camera.Alf1, 0, 0);
+                    Vt2 = Matrix.Rotate(Vt2, 1, Camera.Bet1, 0, 0);
+                    if (j <= 2) Vn[j] = Vt2;
+                    Vt2 = Matrix.Rotate(Vt2, 3, 0, 0, 0);
+                    Vt2 = Matrix.Rotate(Vt2, 0, Camera.Alf, 0, 0);
+                    Vt2 = Matrix.Rotate(Vt2, 1, Camera.Bet, 0, 0);
+                    w[j].X = II(Vt2[0]);
+                    w[j].Y = JJ(Vt2[1]);
+                    if (j <= 2) Wn[j] = Vt2;
+                }
+                Vector tmp = Norm(Vn[0], Vn[1], Vn[2]);
+                double[] res = new double[]{ tmp[0], tmp[1], tmp[2] };
+                body.Faces[i].N = res;
+                Vector NN = Norm(Wn[0], Wn[1], Wn[2]);
+                double d = Math.Abs(NN[2]);
+                Color col = Color.FromArgb(0, 0, (byte)(Math.Round(255 * d)));
+                SolidBrush br = new SolidBrush(col);
+                if (NN[2] < 0)
+                    g.FillPolygon(br, w);
             }
-            if (result[3] != 0)
-                for (int j = 0; j < 3; j++)
-                    result[j] /= result[3];
-            result[3] = 1;
-            return result;
         }
 
-        public static double[] Rotate(double[] V, int k, double fi, double p, double r)
+        public void DrawBody(Graphics g)
         {
-            double[][] M = new double[4][];
+            DrawFaces(g);
+        }
 
-            for (int i = 0; i < 4; i++)
-                M[i] = new double[4];
+        private void Shadow(Graphics g)
+        {
+            Point P = IJ(Sv);
+            g.FillRectangle(Brushes.Red, P.X - 2, P.Y - 2, 5, 5);
+            g.DrawLine(Pens.Red, P.X - 4, P.Y, P.X + 4, P.Y);
+            g.DrawLine(Pens.Red, P.X, P.Y - 4, P.X, P.Y + 5);
 
-            for (int i = 0; i < 4; i++)
+            Point P1, P2;
+            double Zh = -1;
+            for (int i = 0; i < 41; i++)
             {
-                M[3][i] = 0;
-                M[i][3] = 0;
+                P1 = IJ(new Vector(-1 + i * 0.2 / 4, -1, Zh));
+                P2 = IJ(new Vector(-1 + i * 0.2 / 4, 1, Zh));
+                g.DrawLine(Pens.Silver, P1.X, P1.Y, P2.X, P2.Y);
             }
-            M[3][3] = 1;
-            switch (k)
+            for (int i = 0; i < 41; i++)
             {
-                case 0:
-                    M[0][0] = 1; M[0][1] = 0; M[0][2] = 0;
-                    M[1][0] = 0; M[1][1] = Math.Cos(fi); M[1][2] = Math.Sin(fi);
-                    M[2][0] = 0; M[2][1] = -Math.Sin(fi); M[2][2] = Math.Cos(fi);
-                    break;
-                case 1:
-                    M[0][0] = Math.Cos(fi); M[0][1] = 0; M[0][2] = -Math.Sin(fi);
-                    M[1][0] = 0; M[1][1] = 1; M[1][2] = 0;
-                    M[2][0] = Math.Sin(fi); M[2][1] = 0; M[2][2] = Math.Cos(fi);
-                    break;
-                case 2:
-                    M[0][0] = Math.Cos(fi); M[0][1] = Math.Sin(fi); M[0][2] = 0;
-                    M[1][0] = -Math.Sin(fi); M[1][1] = Math.Cos(fi); M[1][2] = 0;
-                    M[2][0] = 0; M[2][1] = 0; M[2][2] = 1;
-                    break;
-                case 3:
-                    M[0][0] = 1; M[0][1] = 0; M[0][2] = 0;
-                    M[1][0] = 0; M[1][1] = 1; M[1][2] = 0;
-                    M[2][0] = 0; M[2][1] = 0; M[2][2] = 1;
-                    M[1][3] = p; M[2][3] = r;
-                    break;
+                P1 = IJ(new Vector(-1, -1 + i * 0.2 / 4, Zh));
+                P2 = IJ(new Vector(1, -1 + i * 0.2 / 4, Zh));
+                g.DrawLine(Pens.Silver, P1.X, P1.Y, P2.X, P2.Y);
             }
-            
-            return VM_Mult(V, M);
+
+            int L1 = body.Faces.Length;
+            int L0 = body.Faces[0].p.Length;
+            Point[] w = new Point[L0];
+
+            for (int i = 0; i < L1; i++)
+            {
+                for (int j = 0; j < L0; j++)
+                {
+                    double[] Vt = body.Vertexs[body.Faces[i].p[j]];
+                    Vector Vt2 = new Vector(Vt[0], Vt[1], Vt[2]);
+                    Vt2 = Matrix.Rotate(Vt2, 0, Camera.Alf1, 0, 0);
+                    Vt2 = Matrix.Rotate(Vt2, 1, Camera.Bet1, 0, 0);
+                    Vt2 = Matrix.Rotate(Vt2, 3, 0, 0, 0);
+                    Vt2[0] = Sv[0] + (Vt[0] - Sv[0]) * (Zh - Sv[2]) / (Vt[2] - Sv[2]);
+                    Vt2[1] = Sv[1] + (Vt[1] - Sv[1]) * (Zh - Sv[2]) / (Vt[2] - Sv[2]);
+                    Vt2[2] = Zh;
+                    Vt2 = Matrix.Rotate(Vt2, 0, Camera.Alf, 0, 0);
+                    Vt2 = Matrix.Rotate(Vt2, 1, Camera.Bet, 0, 0);
+                    w[j].X = II(Vt[0]);
+                    w[j].Y = JJ(Vt[1]);
+                }
+                g.FillPolygon(Brushes.Silver, w);
+            }
+        }
+
+        public void Draw()
+        {
+           // I2 = bitmap.Width;
+            //J2 = bitmap.Height;
+            using (Graphics g = Graphics.FromImage(bitmap))
+            {
+                Color cl = Color.FromArgb(255, 255, 255);
+                g.Clear(cl);
+                g.SmoothingMode = SmoothingMode.HighQuality;
+                Shadow(g);
+                DrawBody(g);       // рисование тела
+            }
         }
     }
 }
-

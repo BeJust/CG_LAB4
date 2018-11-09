@@ -13,13 +13,14 @@ namespace CG_LAB4
 {
     public partial class MainWindow : Form
     {
-        
-        public static Drawer drawer;
-        static Graphics g;
+        ClassLib.Screen screen;
+        Camera cam;
+        static Drawer drawer;
         bool drawing = false;
+        static Graphics g;
         public static bool flMove = false;
-        MouseEventArgs e0; 
-
+        MouseEventArgs e0;
+            
 
         public MainWindow()
         {
@@ -37,6 +38,7 @@ namespace CG_LAB4
         {
             Drawer.Sv[1] = hScrollBar2.Value / 30d;
             MyDraw();
+            
         }
 
         private void hScrollBar3_Scroll(object sender, ScrollEventArgs e)
@@ -49,26 +51,77 @@ namespace CG_LAB4
         {
             byte flBody = Convert.ToByte((sender as RadioButton).Tag);
             Drawer.body = new Body(flBody);
-            MyDraw();
+            MainWindow.MyDraw();
         }
 
         public static void MyDraw()
         {
-            
             drawer.Draw();
-            g.DrawImage(drawer.bitmap, ClientRectangle);
+            
+            g.DrawImage(drawer.bitmap, Program.mainWindow.ClientRectangle);
+            
         }
 
         private void MainWindow_Load(object sender, EventArgs e)
         {
             MouseWheel += new MouseEventHandler(FormMain_MouseWheel);
-            drawer = new Drawer(ClientRectangle.Width, ClientRectangle.Height);
             g = CreateGraphics();
+            screen = new ClassLib.Screen(Size, -2, 2, -2, 2);
+            cam = new Camera();
+            drawer = new Drawer();
+            
+            
         }
 
-        private void dodec_rb_CheckedChanged(object sender, EventArgs e)
+        private void MainWindow_MouseDown(object sender, MouseEventArgs e)
         {
+            drawing = true;
+        }
 
+        private void MainWindow_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (drawing)
+            {
+                if (e.Button == MouseButtons.Left)
+                {
+                    double x = e.X - ClientRectangle.Width / 2;
+                    double y = e.Y - ClientRectangle.Height / 2;
+                    cam.SetAngle(x, y);
+                }
+                else
+                {
+                    e0 = e;
+                }
+                MyDraw();
+            }
+        }
+
+        private void MainWindow_MouseUp(object sender, MouseEventArgs e)
+        {
+            drawing = false;
+        }
+
+        void FormMain_MouseWheel(object sender, MouseEventArgs e)
+        {
+            cam.ChangeWindowXY(e.X, e.Y, e.Delta);
+            MyDraw();
+        }
+
+        private void MainWindow_Paint(object sender, PaintEventArgs e)
+        {
+            MyDraw();
+        }
+
+        private void body_rb_CheckedChanged(object sender, EventArgs e)
+        {
+            cam.FlRotate = false;
+            MainWindow.MyDraw();
+        }
+
+        private void axis_rb_CheckedChanged(object sender, EventArgs e)
+        {
+            cam.FlRotate = true;
+            MainWindow.MyDraw();
         }
     }
 }

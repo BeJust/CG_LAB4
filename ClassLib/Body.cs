@@ -9,13 +9,8 @@ namespace ClassLib
     public struct Face
     {
         public int[] p;            // номера вершин
-        //publi  double A, B, C, D;  // коэффициенты уравнения плоскости
+        //public double A, B, C, D;  // коэффициенты уравнения плоскости
         public double[] N;
-    }
-    
-    public struct Edge
-    {
-        public int p1, p2;         // номера вершин
     }
 
     public class Body
@@ -94,7 +89,7 @@ namespace ClassLib
         public Face[] Faces;        // массив г раней всех тел
         double[,] dodec = new double[20, 3];
 
-        public Edge[] Edges;        // массив ребер всех тел
+
         public Body(byte fl)
         {
             switch (fl)
@@ -117,35 +112,7 @@ namespace ClassLib
             }
         }
 
-        Edge[] GetEdges(Face[] Sides) // по граням строит ребра
-        {
-            Edge[] Result = new Edge[0];
-            int Ls = Sides.Length;
-            int Le = 0;
-            for (int i = 0; i < Ls; i++)
-            {
-                int L = Sides[i].p.Length;
-                for (int j = 0; j < L; j++)
-                {
-                    bool Ok = false; int k = -1;
-                    while ((k < Le - 1) && !Ok)
-                    {
-                        k++;
-                        Ok = ((Result[k].p1 == Sides[i].p[j]) &
-                              (Result[k].p2 == Sides[i].p[(j + 1) % L])) |
-                             ((Result[k].p2 == Sides[i].p[j]) &
-                              (Result[k].p1 == Sides[i].p[(j + 1) % L]));
-                    }
-                    if (!Ok)
-                    {
-                        Array.Resize<Edge>(ref Result, ++Le);
-                        Result[Le - 1].p1 = Sides[i].p[j];
-                        Result[Le - 1].p2 = Sides[i].p[(j + 1) % L];
-                    }
-                }
-            }
-            return Result;
-        }
+
 
         private void Octaedr(double Size)
         {
@@ -171,7 +138,6 @@ namespace ClassLib
                 for (int j = 0; j < 3; j++)
                     Faces[i].p[j] = OctaedrIndex[i, j];
             }
-            Edges = GetEdges(Faces);
         }
 
         private void Icosahedron(double Size)
@@ -197,7 +163,6 @@ namespace ClassLib
                 for (int j = 0; j < 3; j++)
                     Faces[i].p[j] = IcoIndex[i, j];
             }
-            Edges = GetEdges(Faces);
         }
 
         private void initDodecahedron()
@@ -251,7 +216,6 @@ namespace ClassLib
                 for (int j = 0; j < 5; j++)
                     Faces[i].p[j] = DodecIndex[i, j];
             }
-            Edges = GetEdges(Faces);
         }
 
         private void Hexaedr(double Size)
@@ -282,7 +246,6 @@ namespace ClassLib
                 for (int j = 0; j < 4; j++)
                     Faces[i].p[j] = HexaedrIndex[i, j];
             }
-            Edges = GetEdges(Faces);
         }
 
         private void Tetraedr(double Size)
@@ -301,13 +264,6 @@ namespace ClassLib
             Vertexs[3][0] = -Size; Vertexs[3][1] = Size; Vertexs[3][2] = -Size;
             for (int i = 0; i < 4; i++)
                 Vertexs[i][3] = 1;
-            Edges = new Edge[6];
-            Edges[0].p1 = 0; Edges[0].p2 = 1;
-            Edges[1].p1 = 0; Edges[1].p2 = 2;
-            Edges[2].p1 = 1; Edges[2].p2 = 2;
-            Edges[3].p1 = 3; Edges[3].p2 = 0;
-            Edges[4].p1 = 3; Edges[4].p2 = 1;
-            Edges[5].p1 = 3; Edges[5].p2 = 2;
             Faces = new Face[4];
             for (int i = 0; i < 4; i++)
                 Faces[i].p = new int[3];

@@ -38,8 +38,13 @@
             this.hScrollBar3 = new System.Windows.Forms.HScrollBar();
             this.hScrollBar2 = new System.Windows.Forms.HScrollBar();
             this.hScrollBar1 = new System.Windows.Forms.HScrollBar();
+            this.groupBox3_gb = new System.Windows.Forms.GroupBox();
+            this.axis_rb = new System.Windows.Forms.RadioButton();
+            this.body_rb = new System.Windows.Forms.RadioButton();
+            this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.groupBox_gb1.SuspendLayout();
             this.groupBox_gb2.SuspendLayout();
+            this.groupBox3_gb.SuspendLayout();
             this.SuspendLayout();
             // 
             // groupBox_gb1
@@ -67,7 +72,7 @@
             this.dodec_rb.Tag = "4";
             this.dodec_rb.Text = "Додекаэдр";
             this.dodec_rb.UseVisualStyleBackColor = true;
-            this.dodec_rb.CheckedChanged += new System.EventHandler(this.dodec_rb_CheckedChanged);
+            this.dodec_rb.CheckedChanged += new System.EventHandler(this.tetr_rb_CheckedChanged);
             // 
             // icosaedr_rb
             // 
@@ -80,6 +85,7 @@
             this.icosaedr_rb.Tag = "3";
             this.icosaedr_rb.Text = "Икосаэдр";
             this.icosaedr_rb.UseVisualStyleBackColor = true;
+            this.icosaedr_rb.CheckedChanged += new System.EventHandler(this.tetr_rb_CheckedChanged);
             // 
             // oct_rb
             // 
@@ -92,6 +98,7 @@
             this.oct_rb.Tag = "2";
             this.oct_rb.Text = "Октаэдр";
             this.oct_rb.UseVisualStyleBackColor = true;
+            this.oct_rb.CheckedChanged += new System.EventHandler(this.tetr_rb_CheckedChanged);
             // 
             // gecs_rb
             // 
@@ -104,6 +111,7 @@
             this.gecs_rb.Tag = "1";
             this.gecs_rb.Text = "Гексаэдр";
             this.gecs_rb.UseVisualStyleBackColor = true;
+            this.gecs_rb.CheckedChanged += new System.EventHandler(this.tetr_rb_CheckedChanged);
             // 
             // tetr_rb
             // 
@@ -153,20 +161,62 @@
             this.hScrollBar1.TabIndex = 0;
             this.hScrollBar1.Scroll += new System.Windows.Forms.ScrollEventHandler(this.hScrollBar1_Scroll);
             // 
+            // groupBox3_gb
+            // 
+            this.groupBox3_gb.Controls.Add(this.axis_rb);
+            this.groupBox3_gb.Controls.Add(this.body_rb);
+            this.groupBox3_gb.Location = new System.Drawing.Point(1164, 13);
+            this.groupBox3_gb.Name = "groupBox3_gb";
+            this.groupBox3_gb.Size = new System.Drawing.Size(121, 40);
+            this.groupBox3_gb.TabIndex = 2;
+            this.groupBox3_gb.TabStop = false;
+            this.groupBox3_gb.Text = "Вращение";
+            // 
+            // axis_rb
+            // 
+            this.axis_rb.AutoSize = true;
+            this.axis_rb.Location = new System.Drawing.Point(62, 16);
+            this.axis_rb.Name = "axis_rb";
+            this.axis_rb.Size = new System.Drawing.Size(51, 17);
+            this.axis_rb.TabIndex = 1;
+            this.axis_rb.TabStop = true;
+            this.axis_rb.Text = "Осей";
+            this.axis_rb.UseVisualStyleBackColor = true;
+            this.axis_rb.CheckedChanged += new System.EventHandler(this.axis_rb_CheckedChanged);
+            // 
+            // body_rb
+            // 
+            this.body_rb.AutoSize = true;
+            this.body_rb.Location = new System.Drawing.Point(6, 16);
+            this.body_rb.Name = "body_rb";
+            this.body_rb.Size = new System.Drawing.Size(50, 17);
+            this.body_rb.TabIndex = 0;
+            this.body_rb.TabStop = true;
+            this.body_rb.Text = "Тела";
+            this.body_rb.UseVisualStyleBackColor = true;
+            this.body_rb.CheckedChanged += new System.EventHandler(this.body_rb_CheckedChanged);
+            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1376, 640);
+            this.Controls.Add(this.groupBox3_gb);
             this.Controls.Add(this.groupBox_gb2);
             this.Controls.Add(this.groupBox_gb1);
             this.Name = "MainWindow";
             this.Text = "Task4";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.Load += new System.EventHandler(this.MainWindow_Load);
+            this.Paint += new System.Windows.Forms.PaintEventHandler(this.MainWindow_Paint);
+            this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.MainWindow_MouseDown);
+            this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.MainWindow_MouseMove);
+            this.MouseUp += new System.Windows.Forms.MouseEventHandler(this.MainWindow_MouseUp);
             this.groupBox_gb1.ResumeLayout(false);
             this.groupBox_gb1.PerformLayout();
             this.groupBox_gb2.ResumeLayout(false);
+            this.groupBox3_gb.ResumeLayout(false);
+            this.groupBox3_gb.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -183,6 +233,10 @@
         private System.Windows.Forms.HScrollBar hScrollBar3;
         private System.Windows.Forms.HScrollBar hScrollBar2;
         private System.Windows.Forms.HScrollBar hScrollBar1;
+        private System.Windows.Forms.GroupBox groupBox3_gb;
+        private System.Windows.Forms.RadioButton axis_rb;
+        private System.Windows.Forms.RadioButton body_rb;
+        private System.ComponentModel.BackgroundWorker backgroundWorker1;
     }
 }
 

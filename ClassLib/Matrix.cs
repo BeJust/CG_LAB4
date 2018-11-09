@@ -6,44 +6,26 @@ using System.Threading.Tasks;
 
 namespace ClassLib
 {
-    public class Matrix
+    public struct Matrix
     {
-        private float[] matrix;
-
-        private Matrix(float[,] m)
+        private double[] matrix;
+        private Matrix(double[,] m)
         {
-            matrix = new float[16];
+            matrix = new double[16];
             for (int i = 0; i < 4; i++)
                 for (int j = 0; j < 4; j++)
                     matrix[i * 4 + j] = m[i, j];
         }
-        public float this[int r, int c]
+
+        public double this[int r, int c]
         {
             get { return matrix[r * 4 + c]; }
             set { matrix[r * 4 + c] = value; }
         }
 
-        public static Matrix operator *(Matrix matrix, float number)
-        {
-            var m = Zero();
-            for (int i = 0; i < 4; i++)
-                for (int j = 0; j < 4; j++)
-                    m[i, j] = matrix[i, j] * number;
-            return m;
-        }
-        public static Matrix operator *(Matrix first, Matrix second)
-        {
-            var m = Zero();
-            for (int i = 0; i < 4; i++)
-                for (int j = 0; j < 4; j++)
-                    for (int k = 0; k < 4; k++)
-                        m[i, j] += first[i, k] * second[k, j];
-            return m;
-        }
-
         public static Matrix Zero()
         {
-            var m = new float[4, 4] { { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } };
+            var m = new double[4, 4] { { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } };
             return new Matrix(m);
         }
 
@@ -55,25 +37,44 @@ namespace ClassLib
             return m;
         }
 
-        public static Matrix Create(float[,] matrix)
+        public static Vector operator *(Vector vector, Matrix matrix)
         {
-            return new Matrix(matrix);
+            var v = Vector.Zero();
+            for (int i = 0; i < 4; i++)
+                for (int j = 0; j < 4; j++)
+                    v[i] += matrix[i, j] * vector[j];
+            return v;
         }
 
-        public static Matrix CreateRotationMatrix(int axis, float angle)
+        public static Vector Rotate(Vector V, int k, double fi, double p, double r)
         {
-            var m = Matrix.One();
-            int a1 = (axis + 1) % 3;
-            int a2 = (axis + 2) % 3;
-
-            m[a1, a1] = (float)System.Math.Cos(angle);
-            m[a1, a2] = (float)-System.Math.Sin(angle);
-            m[a2, a1] = (float)System.Math.Sin(angle);
-            m[a2, a2] = (float)System.Math.Cos(angle);
-
-            return m;
+            Matrix M = One();
+            switch (k)
+            {
+                case 0:
+                    M[0,0] = 1; M[0,1] = 0; M[0,2] = 0;
+                    M[1,0] = 0; M[1,1] = Math.Cos(fi); M[1,2] = Math.Sin(fi);
+                    M[2,0] = 0; M[2,1] = -Math.Sin(fi); M[2,2] = Math.Cos(fi);
+                    break;
+                case 1:
+                    M[0,0] = Math.Cos(fi); M[0,1] = 0; M[0,2] = -Math.Sin(fi);
+                    M[1,0] = 0; M[1,1] = 1; M[1,2] = 0;
+                    M[2,0] = Math.Sin(fi); M[2,1] = 0; M[2,2] = Math.Cos(fi);
+                    break;
+                case 2:
+                    M[0,0] = Math.Cos(fi); M[0,1] = Math.Sin(fi); M[0,2] = 0;
+                    M[1,0] = -Math.Sin(fi); M[1,1] = Math.Cos(fi); M[1,2] = 0;
+                    M[2,0] = 0; M[2,1] = 0; M[2,2] = 1;
+                    break;
+                case 3:
+                    M[0,0] = 1; M[0,1] = 0; M[0,2] = 0;
+                    M[1,0] = 0; M[1,1] = 1; M[1,2] = 0;
+                    M[2,0] = 0; M[2,1] = 0; M[2,2] = 1;
+                    M[1,3] = p; M[2,3] = r;
+                    break;
+            }
+            return V * M;
+  
         }
-
-        
     }
 }
